@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172a22">
+<title>Mi rutina · 8 semanas</title>
+<style>
+:root{--bg:#f3f5f1;--card:#fff;--ink:#1b2d23;--muted:#68766d;--green:#285b40;--light:#e4efe6;--line:#e1e7e1}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif}
+header{background:#172a22;color:white;padding:25px 20px 30px;border-radius:0 0 25px 25px}
+header small{color:#b9d8c0;letter-spacing:1.5px}h1{font-size:27px;margin:8px 0}header p{color:#d4e0d7;margin:0;font-size:14px}
+main{max-width:620px;margin:auto;padding:17px}.panel,.day,.weeknav{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:16px;margin-bottom:14px}
+.label{color:var(--muted);font-size:12px;font-weight:700}.progressrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0}
+.big{font-size:27px;font-weight:800}.track{height:9px;background:#e5eae5;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:#4a8c60;transition:width .2s}
+.weeknav{display:flex;align-items:center;justify-content:space-between;gap:8px}button{border:0;border-radius:11px;padding:11px 13px;font-weight:700;font-size:14px;background:var(--light);color:var(--green);cursor:pointer}
+button:disabled{opacity:.35}#weekTitle{font-weight:800;text-align:center}input[type=date]{display:block;width:100%;margin-top:9px;padding:10px;border:1px solid var(--line);border-radius:10px;font:inherit}
+.day h3{margin:0;font-size:17px}.dayhead{display:flex;justify-content:space-between;gap:8px}.daydate{font-size:12px;color:var(--muted);margin-top:4px}
+.tag{background:var(--light);color:var(--green);border-radius:30px;padding:5px 9px;font-size:11px;font-weight:800;height:max-content}
+.exercise{display:flex;gap:10px;align-items:flex-start;border-top:1px solid var(--line);padding:12px 0}.exercise:first-of-type{margin-top:12px}
+.exercise input{width:20px;height:20px;accent-color:var(--green);flex-shrink:0;margin:1px 0 0}.exercise label{flex:1;font-size:14px}
+.exercise label span{display:block;color:var(--muted);font-size:12px;margin-top:3px}.exercise input:checked+label{color:var(--muted)}.exercise input:checked+label strong{text-decoration:line-through}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:8px 12px 28px}.actions{display:flex;flex-wrap:wrap;gap:8px}.note{font-size:13px;color:var(--muted);line-height:1.55}
+</style>
+</head>
+<body>
+<header><small>MI PLAN PERSONAL</small><h1>8 semanas de constancia</h1><p>Un día a la vez. Avanza a tu ritmo.</p></header>
+<main>
+<section class="panel"><div class="label">TU PROGRESO SEMANAL</div><div class="progressrow"><div><div class="big" id="percent">0%</div><div class="note" id="count">0 tareas completadas</div></div><div style="font-size:37px" aria-hidden="true">🌱</div></div><div class="track"><div class="fill" id="bar"></div></div><p class="note" id="encouragement">Lo importante es empezar.</p></section>
+<section class="panel"><label class="label" for="startDate">FECHA DE INICIO</label><input type="date" id="startDate"><p class="note">El calendario se calcula desde esta fecha. Puedes cambiarla cuando lo necesites.</p></section>
+<div class="weeknav"><button id="prev" aria-label="Semana anterior">←</button><div id="weekTitle">Semana 1 de 8</div><button id="next" aria-label="Semana siguiente">→</button></div>
+<div id="days"></div>
+<section class="panel"><div class="label">RECUERDA</div><p class="note">Calienta unos 5 minutos antes de entrenar. Haz los movimientos con control, descansa cuando lo necesites y no entrenes hasta el agotamiento. Si sientes dolor, mareo o dificultad respiratoria inusual, detente y avisa a un adulto. Dormir bien, comer regularmente e hidratarte también importa.</p><div class="actions"><button id="resetWeek">Desmarcar esta semana</button><button id="resetAll">Reiniciar todo</button></div></section>
+</main><footer>Tu progreso se guarda en este navegador y dispositivo.</footer>
+<script>
+const KEY="mi-rutina-8-semanas-v1", $=id=>document.getElementById(id);
+function localDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parseDate(s){const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d,12)}
+function shiftDate(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function niceDate(d){return d.toLocaleDateString("es-MX",{day:"numeric",month:"short"})}
+function readState(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+let state=readState();if(!state.start)state.start=localDate(new Date());if(!state.checked)state.checked={};let week=0;
+$("startDate").value=state.start;
+$("startDate").addEventListener("change",e=>{if(!e.target.value)return;state.start=e.target.value;save();render()});
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function task(name,detail){return {name,detail}}
+function routineA(w){const sets=w>=4?3:2;const reps=w<=1?["8–10","8–12","10–12","6–8 por lado","12–15"]:w<=3?["10–12","10–12","12–15","8 por lado","15"]:["10–12","10–12","12–15","8–10 por lado","15–18"];return [task("Sentadilla a una silla",sets+" × "+reps[0]),task("Flexiones en la pared",sets+" × "+reps[1]),task("Puente de glúteos",sets+" × "+reps[2]),task("Bird dog",sets+" × "+reps[3]),task("Elevación de talones",sets+" × "+reps[4])]}
+function routineB(w){const sets=w>=4?3:2;return [task("Zancada hacia atrás asistida","6 por pierna · o sentadilla a silla"),task("Flexiones en la pared",sets+" × 8–12"),task("Bisagra de cadera",sets+" × 10"),task("Dead bug",sets+" × 6 por lado"),task("Marcha en el sitio","3 × 1 minuto")]}
+function getDays(w){const fri=w%2===0?routineA(w):routineB(w);return [{name:"Lunes",tag:"FUERZA A",tasks:routineA(w)},{name:"Martes",tag:"CAMINATA",tasks:[task("Caminata suave","10–20 minutos a ritmo cómodo")]},{name:"Miércoles",tag:"FUERZA B",tasks:routineB(w)},{name:"Jueves",tag:"CAMINATA",tasks:[task("Caminata suave","10–20 minutos a ritmo cómodo")]},{name:"Viernes",tag:w%2===0?"FUERZA A":"FUERZA B",tasks:fri},{name:"Sábado",tag:"OPCIONAL",tasks:[task("Actividad que disfrutes","15–30 minutos, a tu ritmo")]},{name:"Domingo",tag:"DESCANSO",tasks:[task("Descansar y recuperarte","Sin entrenamiento obligatorio")]}]}
+function render(){const start=parseDate(state.start);$("weekTitle").textContent="Semana "+(week+1)+" de 8";$("prev").disabled=week===0;$("next").disabled=week===7;const monday=shiftDate(start,week*7),days=getDays(week),root=$("days");root.innerHTML="";let total=0,done=0;
+days.forEach((day,i)=>{const date=shiftDate(monday,i),dateKey=localDate(date),card=document.createElement("section");card.className="day";const head=document.createElement("div");head.className="dayhead";const titleBox=document.createElement("div"),h=document.createElement("h3");h.textContent=day.name;const dt=document.createElement("div");dt.className="daydate";dt.textContent=niceDate(date);titleBox.append(h,dt);const tag=document.createElement("span");tag.className="tag";tag.textContent=day.tag;head.append(titleBox,tag);card.append(head);
+day.tasks.forEach((t,j)=>{total++;const id=dateKey+"-"+j,row=document.createElement("div");row.className="exercise";const input=document.createElement("input");input.type="checkbox";input.id="task-"+week+"-"+i+"-"+j;input.checked=!!state.checked[id];if(input.checked)done++;const label=document.createElement("label");label.htmlFor=input.id;const strong=document.createElement("strong");strong.textContent=t.name;const span=document.createElement("span");span.textContent=t.detail;label.append(strong,span);input.addEventListener("change",()=>{if(input.checked)state.checked[id]=true;else delete state.checked[id];save();render()});row.append(input,label);card.append(row)});root.append(card)});
+const pct=total?Math.round(done/total*100):0;$("percent").textContent=pct+"%";$("count").textContent=done+" de "+total+" tareas marcadas";$("bar").style.width=pct+"%";$("encouragement").textContent=pct===100?"¡Semana completada! Recuerda recuperarte.":pct>=50?"¡Buen avance! Sigue a tu ritmo.":"Cada pequeña sesión cuenta. No necesitas hacerlo perfecto."}
+$("prev").addEventListener("click",()=>{week=Math.max(0,week-1);render()});$("next").addEventListener("click",()=>{week=Math.min(7,week+1);render()});
+$("resetWeek").addEventListener("click",()=>{if(!confirm("¿Desmarcar todas las tareas de esta semana?"))return;const first=shiftDate(parseDate(state.start),week*7);for(let i=0;i<7;i++){const key=localDate(shiftDate(first,i))+"-";Object.keys(state.checked).forEach(k=>{if(k.startsWith(key))delete state.checked[k]})}save();render()});
+$("resetAll").addEventListener("click",()=>{if(!confirm("¿Reiniciar todas las casillas y la fecha de inicio?"))return;localStorage.removeItem(KEY);state={start:localDate(new Date()),checked:{}};week=0;$("startDate").value=state.start;save();render()});
+save();render();
+</script>
+</body>
+</html>
